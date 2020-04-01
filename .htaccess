@@ -1,6 +1,6 @@
 AuthType Basic
 AuthName "Only authorized users may access this project"
-AuthUserFile .htpasswd
+AuthUserFile /var/www/ncovercash.dev/Projects/wolfram/.htpasswd
 Require valid-user
 
 <FilesMatch "token.txt">
