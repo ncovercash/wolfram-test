@@ -1,21 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 	<head>
-		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
-		<meta content="width=device-width, initial-scale=1, maximum-scale=1.0" name="viewport"/>
+		<meta charset="utf-8"/>
 		<title>
-			Home | Wolfram Alpha Test
+			Wolfram Alpha Test | Noah Overcash
 		</title>
-		<!-- CSS  -->
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js">
-		</script>
-		<script defer="" src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js">
-		</script>
-		<link href="//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css" rel="stylesheet"/>
-		<link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
 
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1.0" name="viewport" />
 
+		<meta name="subject" content="Wolfram Alpha Test"/>
+		<meta name="description" content="Simple sample project based on the Wolfram Alpha API."/>
+		<meta name="copyright" content="Noah Overcash"/>
+
+		<meta name="language" content="EN"/>
+		<meta name="robots" content="index,follow"/>
+		<meta name="author" content="Noah Overcash, me@ncovercash.com"/>
+		<meta name="designer" content="Noah Overcash"/>
+		<meta name="reply-to" content="me@ncovercash.com"/>
+
+	    <meta property="og:title" content="Wolfram Alpha Test"/>
+	    <meta name="og:description" content="Simple sample project based on the Wolfram Alpha API."/>
+		
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet"/>
 		<style type="text/css">
+			[type="checkbox"]:checked + label:before {
+				border-right: 2px solid #000000;
+				border-bottom: 2px solid #000000;
+				transition: border-right 400ms, border-bottom 400ms;
+			}
+
+			/* Indeterminate checkbox */
+			[type="checkbox"]:indeterminate + label:before, [type="checkbox"]:indeterminate + span:not(.lever):before {
+				border-right: 2px solid #000000;
+				transition: border-right 400ms;
+			}
+
+			[type="checkbox"].filled-in:checked + label:after, [type="checkbox"].filled-in:checked + span:not(.lever):after {
+				border: 2px solid #000000;
+				background-color: #000000;
+				transition: background-color 400ms, border 400ms;
+			}
+
+			[type="checkbox"].filled-in.tabbed:checked:focus + span:not(.lever):after {
+				background-color: #000000;
+				border-color: #000000;
+				transition: background-color 400ms, border-color 400ms
+			}
+
+			.switch label input[type=checkbox]:checked + .lever:after,
+			[type="checkbox"].filled-in:checked + label:after {
+				background-color: #000000;
+				transition: background-color 400ms;
+			}
+
+			[type="checkbox"]:checked + label:before {
+				border-right: 2px solid #000000;
+				border-bottom: 2px solid #000000;
+			}
+			[type="checkbox"]:indeterminate + label:before {
+				border-right: 2px solid #000000;
+			}
+
+			[type="checkbox"].filled-in:checked + label:after {
+				border: 2px solid #000000;
+				background-color: #000000;
+			}
+
+			[type="checkbox"].filled-in.tabbed:checked:focus + label:after {
+				background-color: #000000;
+				border-color: #000000;
+			}
+
+			input:not([type]):focus:not([readonly]),
+			input[type=number]:not(.browser-default):focus:not([readonly]) {
+				border-bottom: 1px solid #000000;
+				-webkit-box-shadow: 0 1px 0 0 #000000;
+				box-shadow: 0 1px 0 0 #000000;
+			}
+
+			input:not([type]):focus:not([readonly]) + label,
+			input[type=number]:not(.browser-default):focus:not([readonly]) + label {
+				color: #000000;
+			}
+
+			a {
+				text-decoration: underline;
+				font-weight: bolder;
+			}
+
 			.result:not(.divider) {
 				padding: 15px !important;
 			}
@@ -66,8 +139,20 @@
 				</div>
 			</div>
 		</div>
+		<footer class="page-footer black">
+			<div class="container white-text">
+				<p>
+					Source code is available on <a class="white-text" href="https://github.com/ncovercash/wolfram-test/">GitHub</a>
+				</p>
+				<p>
+					© 2018-<?= date("Y") ?> Noah Overcash, All rights reserved.
+				</p>
+				<br>
+			</div>
+		</footer>
 	</body>
 </html>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
 <script type="text/javascript">
 	$(document).on('keydown', '#input', function(event) {
 		if (event.keyCode == 13) {
