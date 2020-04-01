@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1.0" name="viewport"/>
+		<title>
+			Home | Wolfram Alpha Test
+		</title>
+		<!-- CSS  -->
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js">
+		</script>
+		<script defer="" src="//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/js/materialize.min.js">
+		</script>
+		<link href="//cdnjs.cloudflare.com/ajax/libs/materialize/0.98.0/css/materialize.min.css" rel="stylesheet"/>
+		<link href="//fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+
+
+		<style type="text/css">
+			.result:not(.divider) {
+				padding: 15px !important;
+			}
+
+			.result:not(.warning, .divider) {
+				padding-bottom: 30px !important;
+			}
+
+			.result.divider {
+				color: #000 !important;
+				background-color: #000 !important;
+			}
+
+			.plaintext-result p {
+				font-family: monospace;
+				background-color: #ddd;
+				padding: 2px;
+				display: inline;
+			}
+
+			.plaintext-result {
+				margin: 10px;
+				margin-top: 25px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="section">
+				<h1 class="header">
+					Wolfram Alpha Test
+				</h1>
+			</div>
+			<div class="divider"></div>
+			<div class="section row">
+				<h2>Input</h2>
+				<div class="input-field col s12 m8 l10">
+					<input type="text" id="input">
+					<label for="input">Input</label>
+				</div>
+				<input type="hidden" val="[]" id="states">
+				<div id="submit-btn" class="btn col s12 m4 l2 red">Compute</div>
+			</div>
+			<div class="section">
+				<h3 class="results hide">Results</h3>
+				<div class="row section results hide" id="results-container">
+					
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
+<script type="text/javascript">
+	$(document).on('keydown', '#input', function(event) {
+		if (event.keyCode == 13) {
+			$(".results").removeClass('hide');
+			$("#input").blur();
+		$("#states").val(JSON.stringify(["",""]));
+		$("#results-container").html("<h4 class=\"col s12\">Loading...</h4>");
+		$.getJSON('wolfram-backend.php', {query: $("#input").val(), states: JSON.parse($("#states").val())}, function(data) {
+				renderWolframOutput(data);
+			});
+		}
+	});
+	$(document).on('click', '#submit-btn', function(event) {
+		$(".results").removeClass('hide');
+		$("#input").blur();
+		$("#states").val(JSON.stringify(["",""]));
+		$("#results-container").html("<h4 class=\"col s12\">Loading...</h4>");
+		$.getJSON('wolfram-backend.php', {query: $("#input").val(), states: JSON.parse($("#states").val())}, function(data) {
+			renderWolframOutput(data);
+		});
+	});
+	$(document).on('click', '.state-btn', function(event) {
+		$(".results").removeClass('hide');
+		$("#input").blur();
+		states = JSON.parse($("#states").val());
+		states.push($(this).attr("data-state"));
+		$("#states").val(JSON.stringify(states));
+		$("#results-container").html("<h4 class=\"col s12\">Loading...</h4>");
+		$.getJSON('wolfram-backend.php', {query: $("#input").val(), states: JSON.parse($("#states").val())}, function(data) {
+			renderWolframOutput(data);
+		});
+	});
+
+	var renderWolframOutput = function(data) {
+		if (!data.success) {
+			$("#results-container").html("<h4>An error has occured</h4><h5>Please check your query and try again</h5>");
+			return false;
+		}
+
+		var resultElement = $("<div></div>").addClass("results");
+		var getDividerElement = function() {return $("<div></div>").addClass("result").addClass("divider").addClass("col").addClass("s12")};
+
+		data.items.forEach(function(e) {
+			switch (e.type) {
+				case "warnings":
+					e.value.forEach(function (item) {
+						newElement = $("<div></div>").addClass('result').addClass('warning').addClass('yellow').addClass('lighten-3').addClass('col').addClass('s12');
+						newElement.html(item);
+						resultElement.append(newElement);
+						resultElement.append(getDividerElement());
+					});
+					break;
+				case "pods":
+					e.value.forEach(function (item) {
+						newElement = $("<div></div>").addClass('result').addClass('col').addClass('s12');
+						newElement.append($("<p></p>").addClass('flow-text').html(item.title));
+
+						if (item.subpods.length == 1) {
+							newElement.append($("<div></div>").addClass("col").addClass("s12").html(item.subpods[0].img));
+							if (item.subpods[0].text.length != 0) {
+								newElement.append($("<div></div>").addClass("plaintext-result").addClass("col").addClass("s12").html($("<p></p>").html(item.subpods[0].text)))
+							}
+						} else {
+							item.subpods.forEach(function(subpod) {
+								subpodElement = $("<div></div>").addClass('result').addClass("col").addClass('s12');
+								subpodElement.append($("<h6></h6>").html(subpod.title));
+								subpodElement.append($("<div></div>").addClass("col").addClass("s12").html(subpod.img));
+								if (item.subpods[0].text.length != 0) {
+									subpodElement.append($("<div></div>").addClass("plaintext-result").addClass("col").addClass("s12").html($("<p></p>").html(subpod.text)))
+								}
+								newElement.append(getDividerElement());
+								newElement.append(subpodElement);
+							});
+						}
+
+						item.info.forEach(function(info) {
+							info.value.forEach(function(val) {
+								switch (val.type) {
+									case "text":
+										newElement.append($("<div></div>").addClass("col").addClass("s12").html($("<p></p>").addClass('right').html(val.value)));
+										break;
+									case "img":
+										newElement.append($("<div></div>").addClass("col").addClass("s12").html($(val.value).addClass('right')));
+										break;
+									case "link":
+										newElement.append($("<div></div>").addClass("col").addClass("s12").html($("<a></a>").html(val.text).attr("href", val.href).addClass('right')));
+										break;
+								}
+							});
+						});
+
+						if (item.states.length != 0) {
+							var statesDrawer = $("<div></div>").addClass("col").addClass("s12");
+
+							var states = [];
+
+							item.states.forEach(function(state) {
+								states.push($("<a></a>").attr("href", "#").addClass("state-btn").attr("data-state", state.value).html(state.name));
+							});
+
+							statesDrawer.append(states[0]);
+
+							for (var i = 1; i < states.length; i++) {
+								statesDrawer.append(" | ");
+								statesDrawer.append(states[i]);
+							}
+
+							newElement.append(statesDrawer);
+						}
+
+						resultElement.append(newElement);
+						resultElement.append(getDividerElement());
+					});
+					break;
+			}
+		});
+
+		resultElement.children().last().remove();
+
+		$("#results-container").html(resultElement);
+	}
+</script>

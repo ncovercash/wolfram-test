@@ -1,0 +1,11 @@
+AuthType Basic
+AuthName "Only authorized users may access this project"
+AuthUserFile .htpasswd
+Require valid-user
+
+<FilesMatch "token.txt">
+	Deny from all
+</FilesMatch>
+<FilesMatch ".htpasswd">
+	Deny from all
+</FilesMatch>
