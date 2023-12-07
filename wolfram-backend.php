@@ -1,7 +1,5 @@
 <?php
 
-define("APP_ID", trim(file_get_contents("token.txt")));
-
 function xml2array($xmlObject, $out = []) {
 	foreach (((array)$xmlObject) as $index => $node) {
 		$out[$index] = (is_object($node)) ? xml2array($node) : $node;
@@ -20,7 +18,7 @@ if (!isset($_GET["states"]) || empty($_GET["states"])) {
 $queryStr  = "http://api.wolframalpha.com/v2/query?input=";
 $queryStr .= urlencode($_GET["query"]);
 $queryStr .= "&appid=";
-$queryStr .= APP_ID;
+$queryStr .= getenv("WOLFRAM_TOKEN");
 foreach ($_GET["states"] as $state) {
 	$queryStr .= "&podstate=";
 	$queryStr .= urlencode($state);
